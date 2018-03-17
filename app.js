@@ -10,8 +10,8 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var catalog = require('./routes/catalog')
 
-var mongoDB = 'mongodb://127.0.0.1:27017/locallibrary';
-//var mongoDB = 'mongodb://afzal:afzalpwd@ds153778.mlab.com:53778/local_library_afz';
+//var mongoDB = 'mongodb://127.0.0.1:27017/locallibrary';
+var mongoDB = 'mongodb://afzal:afzalpwd@ds153778.mlab.com:53778/local_library_afz';
 mongoose.connect(mongoDB, () => {
 	console.log('MongoDB connection was successful!!!');
 });
