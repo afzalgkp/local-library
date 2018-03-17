@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  h1 !{title}
+
+  form(method='POST', action='')
+    div.form-group
+      label(for='title') Book name:
+      input#title.form-control(type='text', required='true', name='title', placeholder='Name of the book', value=(undefined===book?'':book.title))
+
+    div.form-group
+      label(for='author') Author:
+      select#author.form-control(type='select' placeholder='Select author' name='author' required='true')
+        for author in authors
+          if book
+            option(value=author._id selected=(book.author == author._id.toString() ? 'selected': false)) #{author.name}
+          else
+            option(value=author._id) #{author.name}
+
+    div.form-group
+      label(for='summary') Summary:
+      input#summary.form-control(type='textarea' required='true' name='summary' placeholder='Summary', value=(undefined===book ? '' : book.summary))
+
+    div.form-group
+      label(for='isbn') ISBN:
+      input#isbn.form-control(type='text', required='true' name='isbn' placeholder='ISBN13' value=(undefined===book ? '': book.isbn))
+
+    div.form-group
+      label(for='genre') Genre:
+      div
+        for genre in genres
+          div(style='padding-right:10px; display: inline')
+            input.checkbox-input(type='checkbox', name='genre', value=genre._id, id=genre._id, checked=genre.checked, style='padding-right:3px')
+            label(for=genre._id, style='padding-left:4px;') #{genre.name}
+
+
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!=error.msg
