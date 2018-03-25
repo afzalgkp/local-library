@@ -27,7 +27,7 @@ exports.index = function(req, res) {
             Genre.count(callback);
         }
     }, function(err, results) {
-        res.render('index', { title: 'Local Library Home', error: err, data: results });
+        res.render('index', { title: 'Local Library Home', error: err, data: results, user: req.user });
     });
 };
 
@@ -40,7 +40,7 @@ exports.book_list = function(req, res, next) {
     .sort([['title', 'ascending']])
     .exec(function(err, list_books){
     	if(err) { return next(err); }
-    	res.render('book_list', {title: 'Book List', book_list: list_books });
+    	res.render('book_list', {title: 'Book List', book_list: list_books, user: req.user });
     });
 };
 
@@ -68,7 +68,7 @@ exports.book_detail = function(req, res, next) {
             return next(err);
         }
 
-        res.render('book_detail', {title: 'Book Details', book: results.thisbook, instances: results.instances});
+        res.render('book_detail', {title: 'Book Details', book: results.thisbook, instances: results.instances, user: req.user});
     });
 }
 
@@ -86,7 +86,7 @@ exports.book_create_get = function(req, res, next) {
     },
     function(err, results){
         if(err) return next(err);
-        res.render('book_form', {title: 'Create Book', genres: results.genres, authors: results.authors});
+        res.render('book_form', {title: 'Create Book', genres: results.genres, authors: results.authors, user: req.user});
     });
 };
 
@@ -94,13 +94,19 @@ exports.book_create_get = function(req, res, next) {
 exports.book_create_post = [
 
     (req, res, next) => {
-        if(!(req.body.genre instanceof Array)) {
-            if(typeof req.body.genre === 'undefined')
-                req.body.genre = [];
-            else
-                req.body.genre = new Array(req.body.genre);
+        if(!req.user){
+            res.redirect('/auth/login');
         }
-        next();
+
+        else{
+            if(!(req.body.genre instanceof Array)) {
+                if(typeof req.body.genre === 'undefined')
+                    req.body.genre = [];
+                else
+                    req.body.genre = new Array(req.body.genre);
+            }
+            next();
+        }
     },
 
     body('title', 'Title must not be empty.').isLength({min: 1}).trim(),
@@ -137,7 +143,7 @@ exports.book_create_post = [
                     if(book.genre.indexOf(results.genres[i]._id) > -1)
                         results.genres[i].checked = 'true';
                 }
-                res.render('book_form', {title: 'Create Book', genres: results.genres, book: book, authors: results.authors, errors: errors.array()});
+                res.render('book_form', {title: 'Create Book', genres: results.genres, book: book, authors: results.authors, errors: errors.array(), user: req.user});
             });
             return;
         }

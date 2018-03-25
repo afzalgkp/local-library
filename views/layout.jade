@@ -8,8 +8,28 @@ html(lang='en')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    div(class='container-fluid')
+  
+  body.layout-body
+    div.blur-back
+
+    div.menu-div
+      span.empty-span-left
+      span
+        a.a-menu(href='/catalog') Home
+      span
+        a.a-menu(href='/catalog') About
+        
+      span.col-css-1
+        a.a-menu-2(href='/profile')
+          span.col-css-2 #{user.username}
+          span
+            img.profile-pic(src=user.thumbnail)
+
+      span.float-right
+        a.a-menu(href='/auth/logout') Logout
+
+
+    div(class='container-fluid', style='margin-top:60px')
       div(class='row')
         div(class='col-sm-2')
           block sidebar
@@ -25,14 +45,24 @@ html(lang='en')
               li 
                 a(href='/catalog/bookinstances') All book-instances
                 hr
-              li 
-                a(href='/catalog/author/create') Create new author
-              li 
-                a(href='/catalog/genre/create') Create new genre
-              li 
-                a(href='/catalog/book/create') Create new book
-              li 
-                a(href='/catalog/bookinstance/create') Create new book instance (copy)
+
+              if user
+                li 
+                  a(href='/catalog/author/create') Create new author
+                li 
+                  a(href='/catalog/genre/create') Create new genre
+                li 
+                  a(href='/catalog/book/create') Create new book
+                li 
+                  a(href='/catalog/bookinstance/create') Create new book instance (copy)
+                  hr
+
+              if user
+                li
+                  a(href='/auth/logout') Logout
+              else
+                li
+                  a(href='/auth') Login
                 
         div(class='col-sm-10')
           block content

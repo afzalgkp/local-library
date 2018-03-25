@@ -16,7 +16,7 @@ exports.bookinstance_list = function(req, res, next){
 		if(err) return next(err);
 
 		else
-			res.render('bookinstance_list', {title: 'Book Instance List', bookinstance_list: list_instances});
+			res.render('bookinstance_list', {title: 'Book Instance List', bookinstance_list: list_instances, user: req.user});
 	});
 };
 
@@ -28,7 +28,7 @@ exports.bookinstance_detail = function(req, res, next){
 	.populate('book')
 	.exec(function(err, bookinstance){
 		if(err) return next(err);
-		res.render('bookinstance_detail', {title: 'Book Instance Detail', bookinstance: bookinstance})
+		res.render('bookinstance_detail', {title: 'Book Instance Detail', bookinstance: bookinstance, user: req.user})
 	});
 };
 
@@ -40,7 +40,7 @@ exports.bookinstance_create_get = function(req, res, next){
 	.exec(function(err, books) {
 		if(err) return next(err);
 
-		res.render('bookinstance_form', {title: 'Create Book Instance', books: books})
+		res.render('bookinstance_form', {title: 'Create Book Instance', books: books, user: req.user})
 	});
 };
 
@@ -66,7 +66,7 @@ exports.bookinstance_create_post = [
 		if(!errors.isEmpty()){
 			Book.find({}, 'title')
 			.exec(function(err, books){
-				res.render('bookinstance_form', {title: 'Create Book Instance', books: books, bookinstance: bookinstance, errors: errors.array()});
+				res.render('bookinstance_form', {title: 'Create Book Instance', books: books, bookinstance: bookinstance, errors: errors.array(), user: req.user});
 			});
 
 			return;

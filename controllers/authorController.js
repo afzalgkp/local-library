@@ -14,7 +14,7 @@ exports.author_list = function(req, res){
 	.exec(function(err, author_list){
 		if (err) return next(err);
 		else
-			res.render('author_list', {title: 'Author List', author_list: author_list});
+			res.render('author_list', {title: 'Author List', author_list: author_list, user: req.user});
 	});
 };
 
@@ -40,14 +40,14 @@ exports.author_detail = function(req, res, next){
             return next(err);
         }
 
-        res.render('author_detail', {title: 'Author Details', author: results.thisauthor, books: results.books});
+        res.render('author_detail', {title: 'Author Details', author: results.thisauthor, books: results.books, user: req.user});
     });
 };
 
 //Display Author create form on GET
 exports.author_create_get = function(req, res, next){
 	//res.send('NOT IMPLEMENTED: Author create GET');
-    res.render('author_form', {title: 'Create Author'});
+    res.render('author_form', {title: 'Create Author', user: req.user});
 };
 
 //Handle Author create on POST
@@ -65,26 +65,31 @@ exports.author_create_post = [
     sanitizeBody('date_of_death').toDate(),
 
     (req, res, next) =>{
-        const errors = validationResult(req);
+        if(req.user){
+            const errors = validationResult(req);
 
-        if(!errors.isEmpty()){
-            res.render('author_form', {title: 'Create Author', author: req.body, errors: errors.array()});
+            if(!errors.isEmpty()){
+                res.render('author_form', {title: 'Create Author', author: req.body, errors: errors.array(), user: req.user});
+            }
+            else{
+                var author = new Author(
+                        {
+                            first_name: req.body.first_name,
+                            family_name: req.body.family_name,
+                            date_of_birth: req.body.date_of_birth,
+                            date_of_death: req.body.date_of_death
+                        }
+                    );
+
+                author.save(function(err){
+                    if(err) return next(err);
+
+                    res.redirect(author.url);
+                });
+            }
         }
         else{
-            var author = new Author(
-                    {
-                        first_name: req.body.first_name,
-                        family_name: req.body.family_name,
-                        date_of_birth: req.body.date_of_birth,
-                        date_of_death: req.body.date_of_death
-                    }
-                );
-
-            author.save(function(err){
-                if(err) return next(err);
-
-                res.redirect(author.url);
-            });
+            res.redirect('/auth/login');
         }
     }
 ];

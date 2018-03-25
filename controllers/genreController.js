@@ -14,7 +14,7 @@ exports.genre_list = function(req, res, next) {
     .exec(function(err, list_genres){
     	if(err) return next(err);
     	else
-    		res.render('genre_list', {title: 'Genre List', genre_list: list_genres});
+    		res.render('genre_list', {title: 'Genre List', genre_list: list_genres, user: req.user});
     });
 };
 
@@ -40,13 +40,13 @@ exports.genre_detail = function(req, res, next) {
             return next(err);
         }
 
-        res.render('genre_detail', {title: 'Genre Detail', genre: results.genre, genre_books: results.genre_books});
+        res.render('genre_detail', {title: 'Genre Detail', genre: results.genre, genre_books: results.genre_books, user: req.user});
     });
 };
 
 // Display Genre create form on GET.
 exports.genre_create_get = function(req, res, next) {
-    res.render('genre_form', {title: 'Create Genre'});
+    res.render('genre_form', {title: 'Create Genre', user: req.user});
 };
 
 // Handle Genre create on POST.
@@ -63,7 +63,7 @@ exports.genre_create_post = [
             );
 
         if(!errors.isEmpty()){
-            res.render('genre_form', {title: 'Create Genre', genre: genre, errors: errors.array()});
+            res.render('genre_form', {title: 'Create Genre', genre: genre, errors: errors.array(), user: req.user});
             return;
         }
         else{

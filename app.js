@@ -5,13 +5,19 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var cookieSession = require('cookie-session');
+var passport = require('passport');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var catalog = require('./routes/catalog')
+var catalog = require('./routes/catalog');
+var auth = require('./routes/authroutes');
+var passportSetup = require('./config/passport-setup');
+var keys = require('./config/keys');
+var profile = require('./routes/profile');
 
 //var mongoDB = 'mongodb://127.0.0.1:27017/locallibrary';
-var mongoDB = 'mongodb://afzal:afzalpwd@ds153778.mlab.com:53778/local_library_afz';
+var mongoDB = keys.mongodb.dbURI;
 mongoose.connect(mongoDB, () => {
 	console.log('MongoDB connection was successful!!!');
 });
@@ -32,10 +38,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieSession({
+  maxAge: 24*60*60*1000,
+  keys: [keys.session.cookieKey]
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/catalog', catalog);
+app.use('/auth', auth);
+app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
